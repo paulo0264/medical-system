@@ -1,5 +1,7 @@
 from django.shortcuts import redirect, render
 from django.contrib.auth.models import User
+from django.contrib.messages import constants
+from django.contrib import messages
 
 def cadastro(request):
     if request.method == "GET":
@@ -34,3 +36,23 @@ def cadastro(request):
         except:
             print('Erro 4')
             return redirect('/usuarios/cadastro')
+        
+def login_view(request):
+    if request.method == "GET":
+        return render(request, 'login.html')
+    elif request.method == "POST":
+        username = request.POST.get('username')
+        senha = request.POST.get("senha")
+
+        user = auth.authenticate(request, username=username, password=senha)
+
+        if user:
+            auth.login(request, user)
+            return redirect('/pacientes/home')
+
+        messages.add_message(request, constants.ERROR, 'Usuário ou senha incorretos')
+        return redirect('/usuarios/login')
+    
+def sair(request):
+    auth.logout(request)
+    return redirect('/usuarios/login')
